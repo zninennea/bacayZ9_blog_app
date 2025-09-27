@@ -1,43 +1,40 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Edit Post') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div class="row">
-        <div class="col-lg-12">
-            <h2>Edit Post</h2>
-            <a class="btn btn-primary" href="{{ route('posts.index') }}"> Back</a>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <form method="POST" action="{{ route('posts.update', $post) }}">
+                        @csrf
+                        @method('PUT')
+
+                        <div>
+                            <label for="title" class="block font-medium text-sm text-gray-700">{{ __('Title') }}</label>
+                            <input id="title" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" name="title" value="{{ old('title', $post->title) }}" required autofocus />
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="body" class="block font-medium text-sm text-gray-700">{{ __('Body') }}</label>
+                            <textarea id="body" name="body" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows="8" required>{{ old('body', $post->body) }}</textarea>
+                        </div>
+
+                        <div class="flex items-center justify-end mt-4">
+                             <a href="{{ route('posts.index') }}" class="text-sm text-gray-600 hover:text-gray-900 mr-4">
+                                {{ __('Cancel') }}
+                            </a>
+
+                            <button type="submit" class="px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                {{ __('Update Post') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-
-    @if ($errors->any())
-        <div class="alert alert-danger mt-3">
-            <strong>Whoops!</strong> There were some problems with your input.<br><br>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('posts.update',$post->id) }}" method="POST" class="mt-3">
-        @csrf
-        @method('PUT')
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12">
-                <div class="form-group">
-                    <strong>Title:</strong>
-                    <input type="text" name="title" value="{{ $post->title }}" class="form-control" placeholder="Title">
-                </div>
-            </div>
-            <div class="col-xs-12 col-sm-12 col-md-12 mt-3">
-                <div class="form-group">
-                    <strong>Body:</strong>
-                    <textarea class="form-control" style="height:150px" name="body" placeholder="Body">{{ $post->body }}</textarea>
-                </div>
-            </div>
-            <div class="col-xs-12 col-sm-12 col-md-12 text-center mt-3">
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
-        </div>
-    </form>
-@endsection
+</x-app-layout>

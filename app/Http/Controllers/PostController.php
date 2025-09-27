@@ -12,7 +12,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->paginate(5); // Get all posts, newest first
+        $posts = auth()->user()->posts()->latest()->paginate(5); // This gets 5 posts per page
         return view('posts.index', compact('posts'));
     }
 
@@ -34,10 +34,10 @@ class PostController extends Controller
             'body' => 'required|string',
         ]);
 
-        Post::create($request->all());
+        // Create the post using the relationship
+        $request->user()->posts()->create($request->only('title', 'body'));
 
-        return redirect()->route('posts.index')
-            ->with('success', 'Post created successfully.');
+        return redirect()->route('posts.index')->with('success', 'Post created successfully.');
     }
 
     /**
@@ -53,6 +53,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        // Abort with a 403 Forbidden error if the user is not the owner
+        if (auth()->user()->id !== $post->user_id) {
+            abort(403);
+        }
         return view('posts.edit', compact('post'));
     }
 
@@ -61,6 +65,9 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        if (auth()->user()->id !== $post->user_id) {
+            abort(403);
+        }
         $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
@@ -77,6 +84,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        if (auth()->user()->id !== $post->user_id) {
+            abort(403);
+        }
         $post->delete();
 
         return redirect()->route('posts.index')
